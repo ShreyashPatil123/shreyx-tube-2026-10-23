@@ -1,0 +1,44 @@
+name: shreyx_tube
+description: "ShreyX Tube - Autonomous High-Performance YouTube Video Client for Android"
+publish_to: 'none'
+version: 1.5.0+14
+environment:
+  sdk: '>=3.13.0 <4.0.0'
+  flutter: '>=3.47.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  # Direct on-device extraction fallback & search
+  youtube_explode_dart: ^3.1.0
+  # State management
+  provider: ^6.1.1
+  # Networking & Media
+  http: ^1.2.0
+  google_sign_in: ^7.2.0
+  webview_flutter: ^4.14.1
+  crypto: ^3.0.7
+  flutter_secure_storage: ^10.0.0
+  # Local storage & preferences
+  shared_preferences: ^2.2.2
+  path_provider: ^2.1.2
+  sqflite: ^2.3.0
+  path: ^1.9.0
+  # UI extensions
+  cached_network_image: ^3.3.0
+  flutter_cache_manager: ^3.4.1
+  shimmer: ^3.0.0
+  # Formatting & UI
+  intl: ^0.19.0
+  cupertino_icons: ^1.0.8
+dev_dependencies:
+  integration_test:
+    sdk: flutter
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  sqflite_common_ffi: ^2.3.6
+  path_provider_platform_interface: ^2.1.2
+dependency_overrides:
+  path_provider_android: 2.2.17
+flutter:
+  uses-material-design: true
