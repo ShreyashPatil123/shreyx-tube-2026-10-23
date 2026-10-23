@@ -64,8 +64,15 @@ void main() {
         publishedTimeText: '3 days ago',
       );
       expect(videoWithTiming.formattedDate, '3 days ago');
-      expect(videoWithTiming.effectiveUploadDate, isNotNull);
-      expect(DateTime.now().difference(videoWithTiming.effectiveUploadDate!).inDays, 3);
+      final beforeParse = DateTime.now();
+      final parsedDate = videoWithTiming.effectiveUploadDate;
+      final afterParse = DateTime.now();
+      expect(parsedDate, isNotNull);
+      // Bracket the getter's clock read instead of truncating a duration taken
+      // from an earlier clock read (72 hours minus microseconds becomes 2 days).
+      const threeDays = Duration(days: 3);
+      expect(parsedDate!.isBefore(beforeParse.subtract(threeDays)), isFalse);
+      expect(parsedDate.isAfter(afterParse.subtract(threeDays)), isFalse);
 
       expect(TubeVideoItem.parseRelativeTime('Streamed 2 days ago'), isNotNull);
       expect(TubeVideoItem.parseRelativeTime('5 hours ago'), isNotNull);

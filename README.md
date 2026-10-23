@@ -86,8 +86,11 @@ report generated; **16 Node tests passed on Node.js 22.23.4**; and the Android
 Gradle task completed successfully. `:app:testDebugUnitTest` reported **NO-SOURCE**:
 this project currently has Android instrumentation tests, but no app-level JVM unit
 test sources. That task success is not a claim that device tests ran. The workflow
-also passed local `actionlint` validation; a hosted GitHub Actions run remains
-unverified until these changes are pushed. No coverage percentage is claimed.
+also passed local `actionlint` validation. The first hosted run exposed a clock-read
+race in a relative-date assertion; it now checks exact timestamp bounds without
+changing application behavior. Hosted results are available in the repository's
+Actions tab. Local results do not establish hosted success. No coverage percentage
+is claimed.
 
 Device integration/instrumentation tests are separate and require an owned device
 or emulator; they are not part of this workflow and were not rerun for the CI change:
