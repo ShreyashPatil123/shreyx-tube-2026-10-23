@@ -37,6 +37,7 @@ migrate_working_dir/
 *.aab
 build/
 android/.gradle/
+android/.kotlin/
 android/app/build/
 android/local.properties
 local.properties

@@ -21,7 +21,7 @@ Source layout: `lib/` application and study tools; `android/` native player/inte
 
 ## Requirements and setup
 
-- Flutter with Dart 3.11+ (validated with Flutter 3.47.5).
+- Flutter 3.47.5 / Dart 3.13.4 (CI pins Flutter 3.47.5; SDK constraints require Dart 3.13+).
 - Android SDK platform 36, a compatible JDK and Android Studio/toolchain.
 - Android 7.0/API 24 or later on the device.
 - Node.js 22+ only for the optional gateway.
@@ -57,12 +57,45 @@ Current gateway counters are memory-only and require one replica. Public deploym
 
 ## Tests and validation
 
+The [Tests workflow](.github/workflows/ci.yml) runs on every push and pull request,
+and can also be started manually. It uses Flutter 3.47.5, Node.js 22, JDK 21 and
+Gradle 9.3.1, resolves the committed dependency lockfile, runs analysis, all Flutter
+unit/widget tests with coverage, the Node server tests, and the Android JVM unit-test
+task. It uploads `coverage/lcov.info` as the `flutter-coverage` artifact (7-day
+retention). Actions are pinned to commit SHAs, checkout credentials are not retained,
+and the workflow token has read-only repository access. No deployment runs in CI.
+
 ```sh
-flutter analyze
-flutter test
-node --test server/server.test.mjs
-# Owned emulator only, using sample content, not a human account:
+flutter pub get --enforce-lockfile
+flutter analyze --no-pub
+flutter test --no-pub --coverage
+npm --prefix server test
+# Requires JDK 21, Gradle 9.3.1, Android SDK 36 and local.properties:
+gradle --no-daemon --console=plain -p android :app:testDebugUnitTest
+```
+
+Automated AI tests inject synthetic responses/HTTP clients. They cover the
+sample-transcript study journey, notes/save/reset, missing content, malformed or
+unsubstantiated AI output, provider failures/quotas, cancellation and privacy changes.
+No API keys, paid APIs or live Gemini calls are required. Dependencies still need
+normal package downloads. No new journey tests were needed for this CI change.
+
+Local verification on **2026-10-23**: locked dependency resolution succeeded;
+Flutter analysis reported no issues; **293 Flutter tests passed** with an LCOV
+report generated; **16 Node tests passed on Node.js 22.23.4**; and the Android
+Gradle task completed successfully. `:app:testDebugUnitTest` reported **NO-SOURCE**:
+this project currently has Android instrumentation tests, but no app-level JVM unit
+test sources. That task success is not a claim that device tests ran. The workflow
+also passed local `actionlint` validation; a hosted GitHub Actions run remains
+unverified until these changes are pushed. No coverage percentage is claimed.
+
+Device integration/instrumentation tests are separate and require an owned device
+or emulator; they are not part of this workflow and were not rerun for the CI change:
+
+```sh
 flutter test integration_test/tube_intelligence_flow_test.dart -d emulator-5554
+# With an owned emulator connected and Gradle/SDK configured:
+gradle --no-daemon -p android :app:connectedDebugAndroidTest
 ```
 
 Before publication, the project passed 293 Flutter tests, 16 gateway tests with a mocked provider, 18 native Android tests and the Android study journey. Production APKs built and the x86_64 release passed an Android 16/API 36 sample-summary smoke test. The clean publication copy is checked separately before pushing; [PUBLICATION.md](PUBLICATION.md) records results. Tests do not establish live Gemini operation or factual accuracy for every generated answer.
